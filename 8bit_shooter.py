@@ -6,17 +6,15 @@ from pygame.locals import *
 import sys
 import pygwidgets
 from CharDesign import *
+import pyghelpers
+
 
 # 2 - Define constants
 BLACK = (0, 0, 0)
 WINDOW_WIDTH = 900
 WINDOW_HEIGHT = 500
 FRAMES_PER_SECOND = 30
-Y_MIN = 350
-Y_MAX = 50
-X_MIN = 20
-X_MAX = 750
-MOVE = 4
+
 
 # 3 - Initialize the world
 pygame.init()
@@ -26,11 +24,14 @@ pygame.display.set_caption("ARE YOU READY PLAYER ONE?")
  
 # 4 - Load assets: image(s), sounds,  etc.
 background = pygwidgets.Image(window, (0,0), "pictures/8bit_background.jpg")
-playerOne = player(window, 300, Y_MIN)
-enemy1 = enemy(window, 100, Y_MIN)
+playerOne = player(window, 550, Y_MIN)
 
 # 5 - Initialize variables
+time = pyghelpers.Timer(5)
+time.start()
+enemy_start = 200
 enemies = []
+
 
 # 6 - Loop forever
 while True:
@@ -45,35 +46,39 @@ while True:
     keyList = pygame.key.get_pressed()
 
     if keyList[K_RIGHT]:
-            playerOne.x_cord += MOVE
-            if playerOne.x_cord > X_MAX:
-                playerOne.x_cord = X_MAX
-            print("X POSITION", playerOne.x_cord)
-        
+        playerOne.update("right")
 
     if keyList[K_LEFT]:
-            playerOne.x_cord -= MOVE
-            if playerOne.x_cord < X_MIN:
-                playerOne.x_cord = X_MIN
-            print("X POSITION", playerOne.x_cord)
+        playerOne.update("left")
+
+    renewal = time.update()
+    #print(time.getTime())
+
+    if len(enemies) != 11 and renewal:
+        enemy_start -= 100
+        new_enemy = Enemy(window, enemy_start, Y_MIN)
+        enemies.append(new_enemy)
+        time.start()
+
+
 
     # 8 - Do any "per frame" actions
-    playerOne.update()
     
     # 9 - Clear the screen
-    #window.fill(BLACK)
     
     # 10 - Draw all screen elements
     background.draw()
+    
+    for enemy in enemies:
+        enemy.advance()
+        enemy.draw()
+        
     playerOne.draw()
-    enemy1.draw()
+
     
     # 11 - Update the screen
     pygame.display.update()
     
     # 12 - Slow things down a bit
     clock.tick(FRAMES_PER_SECOND)  # make PyGame wait the correct amount
-
-
-
 
