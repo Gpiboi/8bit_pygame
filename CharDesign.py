@@ -17,7 +17,6 @@ class Character:
 
     def draw(self):
         self.image.draw()
-
         
 
 class Enemy(Character):
@@ -51,7 +50,7 @@ class Enemy(Character):
 class player(Character):
 
 
-    def __init__(self, window, x, y):
+    def __init__(self, window, x, y = Y_MIN):
         #self.username = username
         self.health = 50
         self.picture = "pictures/8bit_player.png"
