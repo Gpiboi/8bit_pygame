@@ -7,6 +7,7 @@ import sys
 import pygwidgets
 from CharDesign import *
 import pyghelpers
+import pausef
 
 
 # 2 - Define constants
@@ -14,6 +15,7 @@ BLACK = (0, 0, 0)
 WINDOW_WIDTH = 900
 WINDOW_HEIGHT = 500
 FRAMES_PER_SECOND = 30
+ENEMY_MAX = 5
 
 
 # 3 - Initialize the world
@@ -24,12 +26,16 @@ pygame.display.set_caption("ARE YOU READY PLAYER ONE?")
  
 # 4 - Load assets: image(s), sounds,  etc.
 background = pygwidgets.Image(window, (0,0), "pictures/8bit_background.jpg")
-playerOne = player(window, 550, Y_MIN)
+playerOne = player(window, 550)
 
 # 5 - Initialize variables
-time = pyghelpers.Timer(5)
-time.start()
-enemy_start = 200
+renewal = pyghelpers.Timer(5)
+renewal.start()
+
+advances = pyghelpers.Timer(5)
+advances.start()
+
+enemy_x_cord_start = 200
 enemies = []
 
 
@@ -51,16 +57,16 @@ while True:
     if keyList[K_LEFT]:
         playerOne.update("left")
 
-    renewal = time.update()
+    time_for_renewal = renewal.update()
     #print(time.getTime())
 
-    if len(enemies) != 11 and renewal:
-        enemy_start -= 100
-        new_enemy = Enemy(window, enemy_start, Y_MIN)
+    if len(enemies) != ENEMY_MAX and time_for_renewal:
+        enemy_x_cord_start -= 100
+        new_enemy = Enemy(window, enemy_x_cord_start)
         enemies.append(new_enemy)
-        time.start()
+        renewal.start()
 
-
+    shouldAdvance = advances.update()
 
     # 8 - Do any "per frame" actions
     
@@ -70,7 +76,9 @@ while True:
     background.draw()
     
     for enemy in enemies:
-        enemy.advance()
+        if shouldAdvance:
+            enemy.advance()
+            advances.start()
         enemy.draw()
         
     playerOne.draw()
@@ -81,4 +89,3 @@ while True:
     
     # 12 - Slow things down a bit
     clock.tick(FRAMES_PER_SECOND)  # make PyGame wait the correct amount
-
