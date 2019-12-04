@@ -16,7 +16,7 @@ WINDOW_WIDTH = 900
 WINDOW_HEIGHT = 500
 FRAMES_PER_SECOND = 30
 ENEMY_MAX = 5
-DEBUG = True
+DEBUG = False
 
 
 # 3 - Initialize the world
@@ -67,27 +67,45 @@ while True:
         playerOne.update("left")
 
     time_for_renewal = renewal.update()
-    #print(time.getTime())
 
-    if len(enemies) != ENEMY_MAX and time_for_renewal:
+    #------------------Enemy Spawn-------------------
+    if len(enemies) < ENEMY_MAX and time_for_renewal:
         enemy_x_cord_start -= 100
         new_enemy = Enemy(window, enemy_x_cord_start)
         enemies.append(new_enemy)
         renewal.start()
 
-    shouldAdvance = advances.update()
 
     # 8 - Do any "per frame" actions
-    
+    if len(enemies) > 1 and len(pBullets) > 1:
+        print("Loc (enemy):", enemies[0].x, "; loc (bullet):", pBullets[0].x)
+        if pBullets[0].x == enemies[0].x:
+                print("!!!Cross!!!")
+                enemies[0].attacked()
+                print(enemies[0].health)
+                del pBullets[0]
+                del bullet
+                continue
+        
     # 9 - Clear the screen
     
     # 10 - Draw all screen elements
     background.draw()
+
+    shouldAdvance = advances.update()
     
     for enemy in enemies:
         if shouldAdvance:
             enemy.advance()
             advances.start()
+        #------Enemy dies------
+        if enemy.death():
+            enemies.remove(enemy)
+            del enemy
+            ENEMY_MAX -= 1
+            enemy_x_cord_start = enemies[-1].x + 100
+            renewal.start()
+            continue
         enemy.draw()
         
     playerOne.draw()
@@ -95,10 +113,11 @@ while True:
     for bullet in pBullets:
         bullet.update()
         bullet.draw()
-        
+
         if bullet.offScreen:
             pBullets.remove(bullet)
             del bullet
+            
             
 
     if DEBUG:   print(len(pBullets))
@@ -109,5 +128,3 @@ while True:
     
     # 12 - Slow things down a bit
     clock.tick(FRAMES_PER_SECOND)  # make PyGame wait the correct amount
-
-
