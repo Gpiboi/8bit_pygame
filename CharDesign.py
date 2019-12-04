@@ -24,12 +24,12 @@ class Enemy(Character):
     #MAX WINDOW FOR ENEMY OBJECTS
     x_max = 400
 
-    def __init__(self, window, x, y):
+    def __init__(self, window, x):
         self.health = 20
         self.max = Enemy.x_max
         self.picture = "pictures/8bit_enemy.png"
         self.x = x
-        self.y = y
+        self.y = Y_MIN
         self.window = window
         self.image = Image(self.window, (self.x, self.y), self.picture)
         Enemy.x_max -= 100
@@ -46,16 +46,15 @@ class Enemy(Character):
         pass
         
 
-
 class player(Character):
 
 
-    def __init__(self, window, x, y = Y_MIN):
+    def __init__(self, window, x):
         #self.username = username
         self.health = 50
         self.picture = "pictures/8bit_player.png"
         self.x = x
-        self.y = y
+        self.y = Y_MIN
         self.window = window
         self.image = Image(self.window, (self.x, self.y), self.picture)
 
@@ -72,3 +71,23 @@ class player(Character):
             #print("X POSITION", self.x_cord)
                 
         self.image.setLoc((self.x, self.y))
+
+
+class Bullet(Character):
+
+    def __init__(self, window, x):
+        self.picture = "pictures/8bit_bullet.png"
+        self.window = window
+        self.x = x
+        self.y = Y_MIN + 30
+        self.startLoc = (self.x, self.y)
+        self.image = Image(self.window, self.startLoc, self.picture)
+
+    def update(self):
+        
+        self.x -= 20
+        self.image.setLoc((self.x,self.y))
+        
+    @property
+    def offScreen(self):
+        return self.x < X_MIN
