@@ -43,7 +43,9 @@ class Enemy(Character):
         self.image.setLoc((self.x, self.y))
 
     def death(self):
-        pass
+        if self.health < 0:
+            Enemy.x_max += 100
+            return True
         
 
 class player(Character):
@@ -85,7 +87,7 @@ class Bullet(Character):
 
     def update(self):
         
-        self.x -= 20
+        self.x -= 10
         self.image.setLoc((self.x,self.y))
         
     @property
